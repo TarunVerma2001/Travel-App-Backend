@@ -1,7 +1,7 @@
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
-const catchAsync = require('../utils/catchAsync');
 const jwt = require('jsonwebtoken');
+const { promisify } = require('util');
 
 const signToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -32,9 +32,86 @@ exports.signup = async (req, res, next) => {
       passwordChangedAt: req.body.passwordChangedAt,
       role: req.body.role,
     });
-    
+
     createSendToken(newUser, 201, res);
   } catch (err) {
     next(err);
   }
 };
+
+exports.login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    //ckeck if email and password exist
+
+    if (!email || !password) {
+      return next(new AppError('Please provide an email and password!', 400));
+    }
+
+    //check if user exist and password is correct
+
+    const user = await User.findOne({ email }).select('+password');
+
+    if (!user || !(await user.correctPassword(password, user.password))) {
+      return next(new AppError('incorrect email or password!', 401));
+    }
+
+    // if everything is right the sends the token
+
+    createSendToken(user, 200, res);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.protect = async (req, res, next) => {
+  try {
+    //1) get the token from the user as bearer token
+    let token;
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
+    ) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (!token) {
+      return next(
+        new AppError('You are not logged in Please logIn to get access!', 401)
+      );
+    }
+
+    //2) verify the token
+
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+    //3) check if user exists
+
+    const currentUser = await User.findById(decoded.id);
+
+    if (!currentUser) {
+      return next(
+        new AppError('The user belonging to this token no longer exist!', 401)
+      );
+    }
+
+    //4) check if user changed password after the token is issued
+
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+      return next(
+        new AppError('User recently changed password please login again!', 401)
+      );
+    }
+
+    //GRANT ACCESS
+
+    req.user = currentUser;
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+//TODO update and reset password yet to be implemented

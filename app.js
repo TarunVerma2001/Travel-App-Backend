@@ -21,9 +21,10 @@ app.use(cors());
 
 //Routes
 app.use('/api/v1/users', require('./routes/userRoutes'));
+app.use('/api/v1/tours', require('./routes/tourRoutes'));
 
 app.all('*', (req, res, next) => {
-    next(new AppError(`cant't find ${req.originalUrl} on this server!`, 404));
+  next(new AppError(`cant't find ${req.originalUrl} on this server!`, 404));
 });
 
 app.use(globalErrorHandler);
