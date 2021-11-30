@@ -4,6 +4,8 @@ const userController = require('../controllers/userController');
 
 const router = express.Router();
 
+//TODO update and resetPassword routes yet to implemted
+
 console.log('I LOVE INDIA');
 
 router.post('/signup', authController.signup);

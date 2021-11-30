@@ -1,9 +1,17 @@
 const Tour = require('../models/tourModel');
 const AppError = require('../utils/appError');
+const APIFeatures = require('../utils/apiFeatures');
 
 exports.getAllTours = async (req, res, next) => {
   try {
-    const tours = await Tour.find();
+    const features = new APIFeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+
+    const tours = await features.query;
+
     res.status(200).json({
       status: 'success',
       results: tours.length,
@@ -18,7 +26,7 @@ exports.getAllTours = async (req, res, next) => {
 
 exports.getTour = async (req, res, next) => {
   try {
-    const tour = await Tour.findById(req.params.id);
+    const tour = await Tour.findById(req.params.id).populate({path: 'reviews'});
     if (!tour) {
       return next(new AppError('No Tour found with this Id', 404));
     }

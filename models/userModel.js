@@ -47,6 +47,13 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+// virtual-populate
+userSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'user',
+  localField: '_id',
+});
+
 //PRE HOOKS
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
@@ -87,7 +94,6 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
     return JWTTimestamp < changedTimeStamp;
   }
 
-  
   return false;
 };
 

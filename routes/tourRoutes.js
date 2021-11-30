@@ -1,10 +1,12 @@
 const tourController = require('../controllers/tourController');
 const authController = require('../controllers/authController');
+const reviewRouter = require('../routes/reviewRoutes');
+
 const express = require('express');
 
 const router = express.Router();
 
-//TODO update and resetPassword routes yet to implemted
+router.use('/:tourId/reviews', reviewRouter);
 
 router
   .route('/')

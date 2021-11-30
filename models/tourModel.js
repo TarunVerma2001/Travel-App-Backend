@@ -50,7 +50,7 @@ const tourSchema = new mongoose.Schema(
     summary: {
       type: String,
       trim: true,
-    //   required: [true, 'A tour must have a summary!'],
+      //   required: [true, 'A tour must have a summary!'],
     },
     description: {
       type: String,
@@ -58,7 +58,7 @@ const tourSchema = new mongoose.Schema(
     },
     imageCover: {
       type: String,
-    //   required: ['A tour must have a cover image'],
+      //   required: ['A tour must have a cover image'],
     },
     images: [String],
     createdAt: {
@@ -76,24 +76,24 @@ const tourSchema = new mongoose.Schema(
       type: {
         type: String,
         default: 'Point',
-        enum: ['Point']
+        enum: ['Point'],
       },
       coordinates: [Number],
       address: String,
-      description: String
+      description: String,
     },
     locations: [
       {
         type: {
           type: String,
           default: 'Point',
-          enum: ['Point']
+          enum: ['Point'],
         },
         coordinates: [Number],
         address: String,
         description: String,
-        day: Number
-      }
+        day: Number,
+      },
     ],
   },
   {
@@ -101,6 +101,13 @@ const tourSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+//virtual-populate
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
 
 const Tour = mongoose.model('Tour', tourSchema);
 
