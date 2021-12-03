@@ -102,6 +102,9 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+tourSchema.index({ price: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
+
 //virtual-populate
 tourSchema.virtual('reviews', {
   ref: 'Review',

@@ -8,6 +8,16 @@ const router = express.Router();
 
 router.use('/:tourId/reviews', reviewRouter);
 
+router.use(
+  '/tours-within/:distance/center/:latlng/unit/:unit',
+  tourController.getToursWithin
+);
+
+//tours-within?distance233&center=-40,45&unit=mi
+//tours-within/233/center/-40,45/unit/mi
+
+
+
 router
   .route('/')
   .get(tourController.getAllTours)
