@@ -54,6 +54,13 @@ userSchema.virtual('reviews', {
   localField: '_id',
 });
 
+userSchema.pre(/^find/, function(next) {
+  // this points to the current query
+  this.find({ active: { $ne: false } });
+  next();
+});
+
+
 //PRE HOOKS
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();

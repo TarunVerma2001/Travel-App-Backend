@@ -72,8 +72,29 @@ exports.deleteTour = async (req, res, next) => {
   }
 };
 
-// /tours-within/:distance/center/:latlng/unit/:unit
+exports.updateTour = async (req, res, next) => {
+  try {
+    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
+    if (!tour) {
+      return next(new AppError('No Document find with that id!', 404));
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        data: tour,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// /tours-within/:distance/center/:latlng/unit/:unit
 //tours-within/233/center/34.111745,-118.113491/unit/mi
 
 exports.getToursWithin = async (req, res, next) => {
@@ -81,8 +102,6 @@ exports.getToursWithin = async (req, res, next) => {
     const { distance, latlng, unit } = req.params;
     console.log(latlng);
     const [lat, lng] = latlng.split(',');
-
-
 
     //we have to convert our distance into radiants
     //which is distance devided by the earth radius

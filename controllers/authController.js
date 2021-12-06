@@ -113,5 +113,43 @@ exports.protect = async (req, res, next) => {
   }
 };
 
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    //roles === ['admin', 'user']
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError(
+          'you do not have a permission to perform this action!',
+          403
+        )
+      );
+    }
+
+    next();
+  };
+};
+
+exports.updatePassword = async (req, res, next) => {
+  try {
+    //get user password from the collection
+    const user = await User.findById(req.user.id).select('+password');
+
+    //check if the entered passwod is correct or nostrud
+    if (
+      !(await user.correctPassword(req.body.passwordCurrent, user.password))
+    ) {
+      return next(new AppError('your current password is wrong. ', 401));
+    }
+
+    //update password
+    user.password = req.body.password;
+    user.passwordConfirm = req.body.passwordConfirm;
+    await user.save();
+
+    createSendToken(user, 200, res);
+  } catch (err) {
+    next(err);
+  }
+};
 
 //TODO update and reset password yet to be implemented
