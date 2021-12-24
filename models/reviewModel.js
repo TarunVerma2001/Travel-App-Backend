@@ -12,7 +12,7 @@ const reviewSchema = new mongoose.Schema(
       type: Number,
       default: 4.5,
       min: [1, 'A rating msut be greater then or equal to 1!'],
-      max: [5, 'A rating msut be less then or equal to 15!'],
+      max: [5, 'A rating msut be less then or equal to 5!'],
     },
     createdAt: {
       type: Date,
