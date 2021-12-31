@@ -1,4 +1,5 @@
 const Razorpay = require('razorpay');
+const crypto = require('crypto');
 
 exports.razorpayIntegration = async (req, res, next) => {
   const razorpay = new Razorpay({
@@ -18,17 +19,6 @@ exports.razorpayIntegration = async (req, res, next) => {
     });
   } catch (err) {
     console.log('err;:: ', err);
-    next(err);
-  }
-};
-exports.verifyPayment = async (req, res, next) => {
-  try {
-    console.log('web verification');
-    console.log(req.body);
-    res.status(200).json({
-      status: 'success',
-    });
-  } catch (err) {
     next(err);
   }
 };
