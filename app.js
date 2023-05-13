@@ -56,20 +56,11 @@ app.use(
   })
 );
 
-
 //allow other request to get access
 app.use(cors());
 
 //Routes
-app.use('/api/v1/users', require('./routes/userRoutes'));
-app.use('/api/v1/tours', require('./routes/tourRoutes'));
-app.use('/api/v1/reviews', require('./routes/reviewRoutes'));
-app.use('/api/v1/razorpay', require('./routes/razorpayRoutes'));
 
-app.all('*', (req, res, next) => {
-  next(new AppError(`cant't find ${req.originalUrl} on this server!`, 404));
-});
-
-app.use(globalErrorHandler);
+app.use(require('./routes'));
 
 module.exports = app;
